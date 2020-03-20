@@ -1,0 +1,9 @@
+Windows User:
+un: BazaDanych
+pass: Zakopane
+
+Admin Pass:
+Zakopane
+
+"oracle"pass:
+AdminAdmin
