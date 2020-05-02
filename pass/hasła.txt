@@ -1,9 +1,11 @@
 Windows User:
-un: BazaDanych
-pass: Zakopane
-
-Admin Pass:
-Zakopane
-
-"oracle"pass:
+Oracle
 AdminAdmin
+
+DB:
+KSIAZKIFILMY
+Admin pass: AdminAdmin
+"Oracle" pass: AdminAdmin
+
+Darek identified by bober
+connect granted
