@@ -7,5 +7,7 @@ KSIAZKIFILMY
 Admin pass: AdminAdmin
 "Oracle" pass: AdminAdmin
 
-Darek identified by bober
-connect granted
+hr IDENTIFIED BY haslo;
+granted:
+connect 
+DBA
