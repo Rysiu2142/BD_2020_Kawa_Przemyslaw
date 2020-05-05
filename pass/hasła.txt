@@ -11,3 +11,7 @@ hr IDENTIFIED BY haslo;
 granted:
 connect 
 DBA
+
+
+student
+student GRanted : connect
