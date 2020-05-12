@@ -215,3 +215,37 @@ CREATE OR REPLACE TRIGGER FilmyKategoria_on_insert
   END;
   
 -----------------------------------------------------------------
+-- DDL for Procedure CREATE_OCENA
+-----------------------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE "CREATE_OCENA"
+(
+  Ocena_in IN NUMBER
+, Krytyk_in IN VARCHAR
+, idksiazka_in IN NUMBER
+) AS
+BEGIN
+	INSERT INTO OCENY (Ocena,
+	Krytyk,
+	idksiazka)
+	VALUES (Ocena_in,Krytyk_in,idksiazka_in);
+END CREATE_OCENA
+
+
+CREATE OR REPLACE PROCEDURE "CREATE_Gatunki"
+(
+ Nazwa_in IN VARCHAR
+
+) AS
+BEGIN
+	INSERT INTO Gatunki (Nazwa)
+	VALUES (Nazwa_in);
+END CREATE_Gatunki
+	
+	
+
+
+
+
+
+	
