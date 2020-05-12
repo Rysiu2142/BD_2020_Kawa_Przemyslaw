@@ -215,15 +215,10 @@ CREATE OR REPLACE TRIGGER FilmyKategoria_on_insert
   END;
   
 -----------------------------------------------------------------
--- DDL for Procedure CREATE_OCENA
+-- DDL for Procedure CREATE (INSERT)
 -----------------------------------------------------------------
 
-CREATE OR REPLACE PROCEDURE "CREATE_OCENA"
-(
-  Ocena_in IN NUMBER
-, Krytyk_in IN VARCHAR
-, idksiazka_in IN NUMBER
-) AS
+CREATE OR REPLACE PROCEDURE "CREATE_OCENA"(  Ocena_in IN NUMBER, Krytyk_in IN VARCHAR, idksiazka_in IN NUMBER) AS
 BEGIN
 	INSERT INTO OCENY (Ocena,
 	Krytyk,
@@ -231,6 +226,7 @@ BEGIN
 	VALUES (Ocena_in,Krytyk_in,idksiazka_in);
 END CREATE_OCENA
 
+-----------------------------------------------------------------
 
 CREATE OR REPLACE PROCEDURE "CREATE_Gatunki"
 (
@@ -242,7 +238,97 @@ BEGIN
 	VALUES (Nazwa_in);
 END CREATE_Gatunki
 	
-	
+CREATE OR REPLACE PROCEDURE "CREATE_KG"
+(
+ idgatunek_in IN NUMBER
+, idksiazka_in IN NUMBER
+) AS
+BEGIN
+	INSERT INTO KsiazkiGatunki (idgatunek,idksiazka)
+	VALUES (idgatunek_in,idksiazka_in);
+END CREATE_KG
+
+
+-----------------------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE "CREATE_Ksiazki"
+(
+ tytul_in IN VARCHAR
+) AS
+BEGIN
+	INSERT INTO Ksiazki (Tytul)
+	VALUES (tytul_in);
+END CREATE_Ksiazki
+
+-----------------------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE "CREATE_Jezyki"
+(
+ nazwa_in IN VARCHAR,
+ data_wyd IN DATE,
+ idks IN NUMBER 
+) AS
+BEGIN
+	INSERT INTO Jezyki (nazwa,data_wydania,idksiazka)
+	VALUES (nazwa_in,data_wyd,idks);
+END CREATE_Jezyki
+
+-----------------------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE "CREATE_Autorzy"
+(
+ imie_in IN VARCHAR,
+ nazwisko_in IN VARCHAR,
+ urodz IN date ,
+ zmarl IN date
+) AS
+BEGIN
+	INSERT INTO Autorzy (Imie,Nazwisko,urodzony,zmarly)
+	VALUES (imie_in,nazwsko_in,urodz,zmarl);
+END CREATE_Autorzy
+
+CREATE OR REPLACE PROCEDURE "CREATE_KA"
+(
+ idautor_in IN NUMBER
+, idksiazka_in IN NUMBER
+) AS
+BEGIN
+	INSERT INTO KsiazkiAutorzy (idautorzy,idksiazka)
+	VALUES (idgatunek_in,idksiazka_in);
+END CREATE_KG
+
+-----------------------------------------------------------------
+-- Fimy i pochodne
+-----------------------------------------------------------------
+
+
+
+
+
+ALTER TABLE Oceny ADD FOREIGN KEY (idksiazka) REFERENCES Ksiazki (idksiazka);
+
+ALTER TABLE KsiazkiAutorzy ADD FOREIGN KEY (idautor) REFERENCES Autorzy (idautor);
+
+ALTER TABLE KsiazkiAutorzy ADD FOREIGN KEY (idksiazka) REFERENCES Ksiazki (idksiazka);
+
+ALTER TABLE KsiazkiGautnki ADD FOREIGN KEY (idgatunek) REFERENCES Gatunki (idgatunek);
+
+ALTER TABLE KsiazkiGautnki ADD FOREIGN KEY (idksiazka) REFERENCES Ksiazki (idksiazka);
+
+ALTER TABLE FilmyKategoria ADD FOREIGN KEY (idfilm) REFERENCES Filmy (idfilm);
+
+ALTER TABLE FilmyKategoria ADD FOREIGN KEY (idkategoria) REFERENCES Kategoria (idkategoria);
+
+ALTER TABLE Jezyki ADD FOREIGN KEY (idksiazka) REFERENCES Ksiazki (idksiazka);
+
+ALTER TABLE OcenyFilmu ADD FOREIGN KEY (idocena) REFERENCES Filmy (idfilm);
+
+ALTER TABLE Filmy ADD FOREIGN KEY (idfilm) REFERENCES Ksiazki (idksiazka);
+
+
+
+
+
 
 
 
