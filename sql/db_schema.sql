@@ -1,5 +1,5 @@
 --DLL's for Sequences
-CREATE SEQUENCE "Oceny_SEQ" MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START with 1 CACHE 20 ORDER NOCYCLE;
+CREATE SEQUENCE Oceny_SEQ MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START with 1 CACHE 20 ORDER NOCYCLE;
 
 CREATE SEQUENCE "Ksiazki_SEQ" MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START with 1 CACHE 20 ORDER NOCYCLE;
 
@@ -25,12 +25,14 @@ CREATE SEQUENCE "OcenyFilmu_SEQ" MINVALUE 1 MAXVALUE 9999 INCREMENT BY 1 START w
 --------------------------------------------------------------------------------------------------
 
 --DLL for Oceny
-CREATE TABLE "Oceny" (
-  "idocena" NUMBER(*,0) constraint Oceny_pk PRIMARY KEY,
+CREATE TABLE Oceny (
+  idocena NUMBER(*,0) NOT NULL,
   "Ocena" NUMBER(*,0),
   "Krytyk" varchar(255 byte) DEFAULT 'nie',
   "idksiazka" NUMBER(*,0)
-) TABLESPACE "USERS" ;
+);
+
+ALTER TABLE Oceny ADD ( CONSTRAINT Oceny_pk PRIMARY KEY (idocena));
 
 --DLL for Ksiazki
 CREATE TABLE "Ksiazki" (
@@ -44,7 +46,7 @@ CREATE TABLE "Jezyki" (
   "idjezyk" NUMBER(*,0) constraint Jezyki_pk PRIMARY KEY,
   "nazwa" varchar(255 byte),
   "data_wydania" date,
-  "idksiazka" NUMBER(*,)
+  "idksiazka" NUMBER(*,0)
 ) TABLESPACE "USERS"
 ;
 
@@ -61,8 +63,8 @@ CREATE TABLE "Autorzy" (
 --DLL for KsiazkiAutorzy
 CREATE TABLE "KsiazkiAutorzy" (
   "idKA" NUMBER(*,0) constraint KsiazkiAutorzy_pk PRIMARY KEY,
-  "idautor" NUMBER(*,),
-  "idksiazka" NUMBER(*,)
+  "idautor" NUMBER(*,0),
+  "idksiazka" NUMBER(*,0)
 ) TABLESPACE "USERS"
 ;
 
@@ -74,10 +76,10 @@ CREATE TABLE "Gatunki" (
 ;
 
 --DLL for KsiazkiGatunki
-CREATE TABLE "KsiazkiGautnki" (
+CREATE TABLE "KsiazkiGatunki" (
   "idKG" NUMBER(*,0) constraint KsiazkiGautnki_pk PRIMARY KEY,
-  "idgatunek" NUMBER(*,),
-  "idksiazka" NUMBER(*,)
+  "idgatunek" NUMBER(*,0),
+  "idksiazka" NUMBER(*,0)
 ) TABLESPACE "USERS"
 ;
 
@@ -85,7 +87,7 @@ CREATE TABLE "KsiazkiGautnki" (
 CREATE TABLE "Filmy" (
   "idfilm" NUMBER(*,0) constraint Filmy_pk PRIMARY KEY,
   "Tytul" varchar(255 byte),
-  "idksiazka" NUMBER(*,)
+  "idksiazka" NUMBER(*,0)
 ) TABLESPACE "USERS"
 ;
 
@@ -94,7 +96,7 @@ CREATE TABLE "OcenyFilmu" (
   "idocena" NUMBER(*,0) constraint OcenyFilmu_pk PRIMARY KEY,
   "Ocena" NUMBER(*,0),
   "Krytyk" varchar(255 byte),
-  "idfilm" NUMBER(*,)
+  "idfilm" NUMBER(*,0)
 ) TABLESPACE "USERS"
 ;
 
@@ -108,23 +110,32 @@ CREATE TABLE "Kategoria" (
 --DLL for FilmyKategoria
 CREATE TABLE "FilmyKategoria" (
   "idFK" NUMBER(*,0) constraint FilmyKategoria_pk PRIMARY KEY, 
-  "idfilm" NUMBER(*,),
-  "idkategoria" NUMBER(*,)
+  "idfilm" NUMBER(*,0),
+  "idkategoria" NUMBER(*,0)
 ) TABLESPACE "USERS"
 ;
 --------------------------------------------------------------------------
 --DLL's for Triggers auto_increment on insert
 --------------------------------------------------------------------------
-CREATE OR REPLACE TRIGGER Oceny_on_insert
-  Before Insert ON Oceny
+CREATE OR REPLACE TRIGGER OCENY_ON_INSERT 
+BEFORE INSERT ON Oceny 
+FOR EACH ROW 
+WHEN (new.idocena IS NULL) 
+BEGIN
+  select Oceny_SEQ.NEXTVAL
+  INTO :new.
+END;
+
+CREATE OR REPLACE TRIGGER OCENY_ON_INSERT 
+  BEFORE INSERT ON Oceny
   FOR EACH ROW
   BEGIN
-    SELECT Oceny_SEQ.nextval
-    INTO :new.idocena
-    FROM dual
+    SELECT Oceny_SEQ.NEXTVAL 
+    INTO :new.idocena 
+    From dual;
   END;
-
-CREATE OR REPLACE TRIGGER Ksiazki_on_insert
+/
+CREATE OR REPLACE EDITIONABLE TRIGGER Ksiazki_on_insert
   Before Insert ON Ksiazki
   FOR EACH ROW
   BEGIN
@@ -133,7 +144,7 @@ CREATE OR REPLACE TRIGGER Ksiazki_on_insert
     FROM dual
   END;
   
-CREATE OR REPLACE TRIGGER Jezyki_on_insert
+CREATE OR REPLACE EDITIONABLE TRIGGER Jezyki_on_insert
   Before Insert ON Jezyki
   FOR EACH ROW
   BEGIN
@@ -142,7 +153,7 @@ CREATE OR REPLACE TRIGGER Jezyki_on_insert
     FROM dual
   END;
   
-CREATE OR REPLACE TRIGGER Autorzy_on_insert
+CREATE OR REPLACE EDITIONABLE TRIGGER Autorzy_on_insert
   Before Insert ON Autorzy
   FOR EACH ROW
   BEGIN
@@ -151,7 +162,7 @@ CREATE OR REPLACE TRIGGER Autorzy_on_insert
     FROM dual
   END;
   
-CREATE OR REPLACE TRIGGER KsiazkiAutorzy_on_insert
+CREATE OR REPLACE EDITIONABLE TRIGGER KsiazkiAutorzy_on_insert
   Before Insert ON KsiazkiAutorzy
   FOR EACH ROW
   BEGIN
@@ -160,7 +171,7 @@ CREATE OR REPLACE TRIGGER KsiazkiAutorzy_on_insert
     FROM dual
   END;
   
-CREATE OR REPLACE TRIGGER Gatunki_on_insert
+CREATE OR REPLACE EDITIONABLE TRIGGER Gatunki_on_insert
   Before Insert ON Gatunki
   FOR EACH ROW
   BEGIN
@@ -169,16 +180,16 @@ CREATE OR REPLACE TRIGGER Gatunki_on_insert
     FROM dual
   END;
   
-CREATE OR REPLACE TRIGGER KsiazkiGautnki_on_insert
-  Before Insert ON KsiazkiGautnki
+CREATE OR REPLACE EDITIONABLE TRIGGER KsiazkiGatunki_on_insert
+  Before Insert ON KsiazkiGatunki
   FOR EACH ROW
   BEGIN
-    SELECT KsiazkiGautnki_SEQ.nextval
+    SELECT KsiazkiGatunki_SEQ.nextval
     INTO :new.idKG
     FROM dual
   END;
   
-CREATE OR REPLACE TRIGGER Filmy_on_insert
+CREATE OR REPLACE EDITIONABLE TRIGGER Filmy_on_insert
   Before Insert ON Filmy
   FOR EACH ROW
   BEGIN
@@ -187,7 +198,7 @@ CREATE OR REPLACE TRIGGER Filmy_on_insert
     FROM dual
   END;
   
-CREATE OR REPLACE TRIGGER OcenyFilmu_on_insert
+CREATE OR REPLACE EDITIONABLE TRIGGER OcenyFilmu_on_insert
   Before Insert ON OcenyFilmu
   FOR EACH ROW
   BEGIN
@@ -196,7 +207,7 @@ CREATE OR REPLACE TRIGGER OcenyFilmu_on_insert
     FROM dual
   END;
   
-CREATE OR REPLACE TRIGGER Kategoria_on_insert
+CREATE OR REPLACE EDITIONABLE TRIGGER Kategoria_on_insert
   Before Insert ON Kategoria
   FOR EACH ROW
   BEGIN
@@ -205,7 +216,7 @@ CREATE OR REPLACE TRIGGER Kategoria_on_insert
     FROM dual
   END;
   
-CREATE OR REPLACE TRIGGER FilmyKategoria_on_insert
+CREATE OR REPLACE EDITIONABLE TRIGGER FilmyKategoria_on_insert
   Before Insert ON FilmyKategoria
   FOR EACH ROW
   BEGIN
@@ -214,6 +225,17 @@ CREATE OR REPLACE TRIGGER FilmyKategoria_on_insert
     FROM dual
   END;
   
+ALTER TRIGGER "Oceny_on_insert" ENABLE;
+ALTER TRIGGER "Ksiazki_on_insert" ENABLE;
+ALTER TRIGGER "Jezyki_on_insert" ENABLE;
+ALTER TRIGGER "Autorzy_on_insert" ENABLE;
+ALTER TRIGGER "KsiazkiAutorzy_on_insert" ENABLE;
+ALTER TRIGGER "OcenyFilmu_on_insert" ENABLE;
+ALTER TRIGGER "Filmy_on_insert" ENABLE;
+ALTER TRIGGER "Kategoria_on_insert" ENABLE;
+ALTER TRIGGER "FilmyKategoria_on_insert" ENABLE;
+ALTER TRIGGER "KsiazkiGatunki_on_insert" ENABLE;
+ALTER TRIGGER "Gatunki_on_insert" ENABLE;
 -----------------------------------------------------------------
 -- DDL for Procedure CREATE (INSERT)
 -----------------------------------------------------------------
@@ -366,9 +388,9 @@ ALTER TABLE KsiazkiAutorzy ADD FOREIGN KEY (idautor) REFERENCES Autorzy (idautor
 
 ALTER TABLE KsiazkiAutorzy ADD FOREIGN KEY (idksiazka) REFERENCES Ksiazki (idksiazka);
 
-ALTER TABLE KsiazkiGautnki ADD FOREIGN KEY (idgatunek) REFERENCES Gatunki (idgatunek);
+ALTER TABLE KsiazkiGatunki ADD FOREIGN KEY (idgatunek) REFERENCES Gatunki (idgatunek);
 
-ALTER TABLE KsiazkiGautnki ADD FOREIGN KEY (idksiazka) REFERENCES Ksiazki (idksiazka);
+ALTER TABLE KsiazkiGatunki ADD FOREIGN KEY (idksiazka) REFERENCES Ksiazki (idksiazka);
 
 ALTER TABLE FilmyKategoria ADD FOREIGN KEY (idfilm) REFERENCES Filmy (idfilm);
 
