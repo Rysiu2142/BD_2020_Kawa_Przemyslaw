@@ -1,0 +1,21 @@
+.nav-link
+{
+	color:white;
+	font-size: x-large;
+	font-family: fantasy;
+}
+.login_btn
+{
+	color:white;
+	font-size: x-large;
+	font-family: fantasy;
+}
+a
+{
+	text-decoration: none;
+}
+section
+{
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
