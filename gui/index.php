@@ -31,10 +31,10 @@
 						<a class="nav-link" href="index.php#onas">O nas</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="index.php#onas#galeria">Galeria</a>
+						<a class="nav-link" href="index.php#galeria">Galeria</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="index.php#onas#kontakt">Kontakt</a>
+						<a class="nav-link" href="index.php#kontakt">Kontakt</a>
 					</li>
 				</ul>
 				<div class="my-2">
