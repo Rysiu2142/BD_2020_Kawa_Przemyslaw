@@ -131,21 +131,41 @@ BEGIN
 END CREATE_OCENA
 
 -----------------------------------------------------------------
+CREATE OR REPLACE PACKAGE T_GATUNEK AS
 
+FUNCTION gatunek_p(
+nazwa_1 in GATUNKI.Nazwa%TYPE
+) RETURN NUMBER;
 
-
-
-CREATE OR REPLACE PROCEDURE CREATE_Gatunki
+PROCEDURE CREATE_Gatunek
 (
  Nazwa in GATUNKI.Nazwa%TYPE
-) AS
-BEGIN
+ );
+END T_GATUNEK;
+/
+
+CREATE OR REPLACE PACKAGE BODY T_GATUNEK AS
+
+FUNCTION gatunek_p(
+nazwa_1 in GATUNKI.Nazwa%TYPE
+) RETURN NUMBER IS
+  suma NUMBER:=0;
+  BEGIN
+    SELECT COUNT(*) INTO suma FROM GATUNKI WHERE Nazwa=nazwa_1;
+    RETURN suma;
+  END gatunek_p;
+  
+  PROCEDURE CREATE_Gatunek(
+  Nazwa in GATUNKI.Nazwa%TYPE
+  ) AS
+  BEGIN
 	INSERT INTO Gatunki
 	VALUES (
 	Gatunki_SEQ.nextval,
 	Nazwa);
 END CREATE_Gatunki
-	
+END T_GATUNEK;
+	/
   
 CREATE OR REPLACE PROCEDURE CREATE_KG
 (
