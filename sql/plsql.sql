@@ -363,7 +363,7 @@ BEGIN
 END CREATE_KG;
 END T_KF;
 -----------------------------------------------------------------
--- PLAIN SELECTS
+--  SELECTS
 -----------------------------------------------------------------
 CREATE OR REPLACE PACKAGE S_OCENY AS
 PROCEDURE SE_OCENY(OCENY OUT SYS_REFCURSOR);
@@ -396,6 +396,11 @@ END F_Kategoria;
 -----------------------------------------------------------------
 CREATE OR REPLACE PACKAGE F_Gatunki AS
 PROCEDURE Fet_Gatunki(idksiazka_1 in KsiazkiGatunki.idksiazka%TYPE,
+Gatunki_out OUT SYS_REFCURSOR);
+END F_Gatunki;
+
+CREATE OR REPLACE PACKAGE BODY F_Gatunki AS
+PROCEDURE Fet_Gatunki(idksiazka_1 in KsiazkiGatunki.idksiazka%TYPE,
 Gatunki_out OUT SYS_REFCURSOR) AS
 	BEGIN
 		OPEN Gatunki_out FOR
@@ -403,6 +408,22 @@ Gatunki_out OUT SYS_REFCURSOR) AS
 		FROM KsiazkiGatunki kg , GATUNKI g
 		WHERE idksiazka_1=kg.idksiazka AND kg.idgatunek=g.idgatunek;
 	END Fet_Gatunki;
-END F_Kategoria;
- 
+END F_Gatunki;
+-----------------------------------------------------------------
+CREATE OR REPLACE PACKAGE F_Autorzy (
+PROCEDURE Fet_Autorzy(idksiazka in KsiazkiAutorzy.idksiazka%TYPE,
+Autorzy_out OUT SYS_REFCURSOR);
+END F_Autorzy;
+
+CREATE OR REPLACE PACKAGE BODY F_Autorzy AS
+PROCEDURE Fet_Autorzy(idksiazka_1 in KsiazkiAutorzy.idksiazka%TYPE,
+Autorzy_out OUT SYS_REFCURSOR) AS
+	BEGIN
+		OPEN Autorzy_out FOR
+		SELECT Imie,Nazwisko 
+		FROM KsiazkiAutorzy ka, Autorzy a
+		WHERE idksiazka_1=ka.idksiazka AND  ka.idautor=a.idautor;
+	END Fet_Autorzy;
+END F_Autorzy;
+-----------------------------------------------------------------
 
