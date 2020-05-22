@@ -71,6 +71,12 @@ PROCEDURE ST_Gatunek
 (
  Nazwa in GATUNKI.Nazwa%TYPE
  );
+
+PROCEDURE usun(
+idgatunek_1 in GATUNKI.idgatunek%TYPE );
+PROCEDURE getGatuneki(
+GATUNKI_o OUT SYS_REFCURSOR);
+
 END T_GATUNEK;
 /
 
@@ -94,6 +100,21 @@ nazwa_1 in GATUNKI.Nazwa%TYPE
 	Gatunki_SEQ.nextval,
 	Nazwa);
 END ST_Gatunek;
+
+	PROCEDURE usun(
+	idgatunek_1 in GATUNKI.idgatunek%TYPE 
+	) AS
+	gat GATUNKI%ROWTYPE;
+	BEGIN
+		select * into gat from GATUNKI where idgatunek=idgatunek_1;
+		delete from GATUNKI where idgatunek=idgatunek_1;
+		DBMS_OUTPUT.PUT_LINE(gat.idgatunek);
+	END usun;
+	
+	PROCEDURE getGatuneki(
+GATUNKI_o OUT SYS_REFCURSOR)
+OPEN GATUNKI_o FOR
+SELECT * from GATUNKI;
 END T_GATUNEK;
 	/
 	
@@ -420,12 +441,14 @@ END F_Gatunki;
 /
 -----------------------------------------------------------------
 CREATE OR REPLACE PACKAGE F_Autorzy AS
-PROCEDURE Fet_Autorzy(idksiazka in KsiazkiAutorzy.idksiazka%TYPE,
+PROCEDURE Fet_Autorzy (
+idksiazka_1 in KsiazkiAutorzy.idksiazka%TYPE,
 Autorzy_out OUT SYS_REFCURSOR);
 END F_Autorzy;
 /
 CREATE OR REPLACE PACKAGE BODY F_Autorzy AS
-PROCEDURE Fet_Autorzy(idksiazka_1 in KsiazkiAutorzy.idksiazka%TYPE,
+PROCEDURE Fet_Autorzy (
+idksiazka_1 in KsiazkiAutorzy.idksiazka%TYPE,
 Autorzy_out OUT SYS_REFCURSOR) AS
 	BEGIN
 		OPEN Autorzy_out FOR
@@ -438,26 +461,49 @@ END F_Autorzy;
 -----------------------------------------------------------------
 
 CREATE OR REPLACE PACKAGE F_Ksiazki AS
-PROCEDURE Fet_Ksiazki (Ksiazki OUT SYS_REFCURSOR);
-PROCEDURE AVG_OCENA(Ocena_out OUT SYS_REFCURSOR);
+
+PROCEDURE Fet_Ksiazki (Ksiazki_out OUT SYS_REFCURSOR);
+PROCEDURE AVG_OCENA(idksiazka_1 in Ksiazki.idksiazka%TYPE,
+					Ocena_out OUT SYS_REFCURSOR);
+PROCEDURE usun_Ksiazke(idksiazka_1 in Ksiazki.idksiazka%TYPE);
+FUNCTION czy_oceniona(
+idksiazka_1 in Oceny.idksiazka%TYPE
+) RETURN NUMBER;
 END F_Ksiazki;
 /
 CREATE OR REPLACE PACKAGE BODY F_Ksiazki AS
-PROCEDURE Fet_Ksiazki (Ksiazki_out OUT SYS_REFCURSOR)
+PROCEDURE Fet_Ksiazki (Ksiazki_out OUT SYS_REFCURSOR) AS
 BEGIN
 	OPEN Ksiazki_out FOR
 	SELECT idksiazka,Tytul,data_wydania,OrginalnyJezyk
 	FROM Ksiazki;
 END Fet_Ksiazki;
 
-PROCEDURE AVG_OCENA(Ocena_out OUT SYS_REFCURSOR)
+PROCEDURE AVG_OCENA(idksiazka_1 in Ksiazki.idksiazka%TYPE
+,Ocena_out OUT SYS_REFCURSOR) AS
 BEGIN
 	OPEN Ocena_out FOR
-	SELECT k.idksiazka,Tytul,data_wydania,OrginalnyJezyk, AVG(Ocena) 
-	FROM Ksiazki k,Oceny o
-	WHERE k.idksiazka=o.idksiazka
-	GROUP BY Tytul;
-	END AVG_OCENA;
+	SELECT AVG(Ocena) AS SRED
+	FROM Oceny o
+	WHERE idksiazka_1=o.idksiazka;
+	
+END AVG_OCENA;
 
+PROCEDURE usun_Ksiazke(idksiazka_1 in Ksiazki.idksiazka%TYPE) AS
+BEGIN 
+	delete from OCENY where idksiazka_1=idksiazka;
+	delete from KsiazkiGatunki where idksiazka_1=idksiazka;
+	delete from KsiazkiAutorzy where idksiazka_1=idksiazka;
+	UPDATE Filmy SET idksiazka=NULL WHERE idksiazka_1=idksiazka;
+END usun_Ksiazke;
+
+FUNCTION czy_oceniona(
+idksiazka_1 in Oceny.idksiazka%TYPE
+) RETURN NUMBER IS
+	suma NUMBER:=0;
+	BEGIN
+		SELECT COUNT(*) INTO suma FROM OCENY WHERE idksiazka_1=idksiazka;
+		RETURN suma;
+	END czy_oceniona;
 END F_Ksiazki;
 /
