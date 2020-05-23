@@ -407,7 +407,7 @@ END S_OCENY;
 -----------------------------------------------------------------
 CREATE OR REPLACE PACKAGE F_Kategoria AS
 PROCEDURE Fet_Kategoria(
-idfilm in FilmyKategoria.idfilm%TYPE, Kategorie OUT SYS_REFCURSOR);
+idfilm_1 in FilmyKategoria.idfilm%TYPE, Kategorie OUT SYS_REFCURSOR);
 END F_Kategoria;
 /
  CREATE OR REPLACE PACKAGE BODY F_Kategoria AS
@@ -416,7 +416,7 @@ END F_Kategoria;
  Kategorie OUT SYS_REFCURSOR) AS
  BEGIN
 	OPEN Kategorie FOR
-	SELECT k.Nazwa 
+	SELECT k.idkategoria,k.Nazwa 
 	FROM  FilmyKategoria fk, Kategoria k
 	WHERE fk.idfilm=idfilm_1 AND fk.idkategoria=k.idkategoria;
 END Fet_Kategoria;
@@ -433,7 +433,7 @@ PROCEDURE Fet_Gatunki(idksiazka_1 in KsiazkiGatunki.idksiazka%TYPE,
 Gatunki_out OUT SYS_REFCURSOR) AS
 	BEGIN
 		OPEN Gatunki_out FOR
-		SELECT  g.Nazwa
+		SELECT  g.idgatunek,g.Nazwa
 		FROM KsiazkiGatunki kg , GATUNKI g
 		WHERE idksiazka_1=kg.idksiazka AND kg.idgatunek=g.idgatunek;
 	END Fet_Gatunki;
@@ -452,7 +452,7 @@ idksiazka_1 in KsiazkiAutorzy.idksiazka%TYPE,
 Autorzy_out OUT SYS_REFCURSOR) AS
 	BEGIN
 		OPEN Autorzy_out FOR
-		SELECT Imie,Nazwisko 
+		SELECT a.idautor,Imie,Nazwisko 
 		FROM KsiazkiAutorzy ka, Autorzy a
 		WHERE idksiazka_1=ka.idksiazka AND  ka.idautor=a.idautor;
 	END Fet_Autorzy;
