@@ -4,20 +4,17 @@
 CREATE TABLE Oceny (
   idocena NUMBER(10) PRIMARY KEY,
   Ocena NUMBER(10),
-  Krytyk varchar2(255) DEFAULT 'nie',
   idksiazka NUMBER(10)
 );
-
 
 
 --DLL for Ksiazki
 CREATE TABLE Ksiazki (
   idksiazka NUMBER(10) PRIMARY KEY,
   Tytul varchar2(255),
-  data_wydania date,
+  rok_wydania NUMBER(5),
   OrginalnyJezyk varchar2(255)
 );
-
 
 
 --DLL for Autorzy
@@ -60,7 +57,6 @@ CREATE TABLE Filmy (
 CREATE TABLE OcenyFilmu (
   idocena NUMBER(10) PRIMARY KEY,
   Ocena NUMBER(10),
-  Krytyk varchar2(255) DEFAULT 'nie',
   idfilm NUMBER(10)
 );
 
@@ -94,7 +90,7 @@ ALTER TABLE FilmyKategoria ADD FOREIGN KEY (idfilm) REFERENCES Filmy (idfilm);
 
 ALTER TABLE FilmyKategoria ADD FOREIGN KEY (idkategoria) REFERENCES Kategoria (idkategoria);
 
-ALTER TABLE OcenyFilmu ADD FOREIGN KEY (idocena) REFERENCES Filmy (idfilm);
+ALTER TABLE OcenyFilmu ADD FOREIGN KEY (idfilm) REFERENCES Filmy (idfilm);
 
 ALTER TABLE Filmy ADD FOREIGN KEY (idfilm) REFERENCES Ksiazki (idksiazka);
 
