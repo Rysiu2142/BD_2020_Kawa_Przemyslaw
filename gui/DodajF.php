@@ -47,28 +47,21 @@ session_start();
 <div class="container-fluid text-center">    
   <div class="row content">
     <div class="col-sm-8"> 
-		<h2> Dodawanie Ksiazki</h2>
+		<h2> Dodawanie Filmu</h2>
        <div class="px-4 py-3" > 
-			<form action="DodajKPOST.php" method="POST" Class="text-center">
+			<form action="DodajFPOST.php" method="POST" Class="text-center">
 				<div class="form-group">
 					<label>Tytuł</label>
 					<input name="Tytul" class="form-control" required>
 				</div>
+
 				<div class="form-item">
-					<label>Rok Wydania</label>
-					<input name="RW" class="form-control" placeholder="YYYY">	
+					<label>ID Kategoria</label>
+					<input name="IDKATEG" class="form-control" placeholder="1,2,3">
 				</div>
 				<div class="form-item">
-					<label>Orginalny Język</label>
-					<input name="OJ" class="form-control">
-				</div>
-				<div class="form-item">
-					<label>ID Autora</label>
-					<input name="IDA" class="form-control" placeholder="1,2,3">
-				</div>
-				<div class="form-item">
-					<label>ID Gatunku</label>
-					<input name="IDG" class="form-control" placeholder="1,2,3">
+					<label>ID Ksiazki</label>
+					<input name="IDKSIAZKI" class="form-control" placeholder="Jeden NUMER!">
 				</div>
 				<div class="form-item">
 					<input name="dead" type="hidden">
@@ -90,7 +83,7 @@ session_start();
 					trigger_error(hymlentites($m['message']), E_USER_ERROR);
 					}
 					$cursor2=oci_new_cursor($conn);
-					$stid = oci_parse($conn,"begin S_WINGS.WAutorzy(:dane); end;");
+					$stid = oci_parse($conn,"begin S_WINGS.WKategorie(:dane); end;");
 					oci_bind_by_name($stid,":dane",$cursor2,-1,OCI_B_CURSOR);
 					oci_execute($stid);
 					oci_execute($cursor2);
@@ -98,9 +91,8 @@ session_start();
 				<table class="table">
 					<thead>
 						<tr>
-							<th scope="col">ID Autora</th>
-							<th scope="col">Imie</th>
-							<th scope="col">Nazwisko</th>
+							<th scope="col">ID Kaegori</th>
+							<th scope="col">Nazwa</th>
 						</tr>
 					</thead>
 					
@@ -109,9 +101,8 @@ session_start();
 							while (($row = oci_fetch_array($cursor2, OCI_ASSOC + OCI_RETURN_NULLS)) !=false) {
 						?>
 						<tr>
-							<th scope="row"> <?php echo $row['IDAUTOR']; ?> </th>
-							<td><?php echo $row['IMIE'] ?></td>
-							<td><?php echo $row['NAZWISKO'] ?></td>
+							<th scope="row"> <?php echo $row['IDKATEGORIA']; ?> </th>
+							<td><?php echo $row['NAZWA'] ?></td>
 						</tr>
 					<?php 
 					}
@@ -124,7 +115,7 @@ session_start();
 					oci_free_statement($cursor2);
 					
 					$cursor3=oci_new_cursor($conn);
-					$stid = oci_parse($conn,"begin S_WINGS.WGatunki(:dane); end;");
+					$stid = oci_parse($conn,"begin F_Ksiazki.Fet_Ksiazki(:dane); end;");
 					oci_bind_by_name($stid,":dane",$cursor3,-1,OCI_B_CURSOR);
 					oci_execute($stid);
 					oci_execute($cursor3);
@@ -132,8 +123,8 @@ session_start();
 					<table class="table">
 					<thead>
 						<tr>
-							<th scope="col">ID Gatunku</th>
-							<th scope="col">Gatunek</th>
+							<th scope="col">ID Ksiazki</th>
+							<th scope="col">Tytuł</th>
 						</tr>
 					</thead>
 					
@@ -142,8 +133,8 @@ session_start();
 							while (($row = oci_fetch_array($cursor3, OCI_ASSOC + OCI_RETURN_NULLS)) !=false) {
 						?>
 						<tr>
-							<th scope="row"> <?php echo $row['IDGATUNEK']; ?> </th>
-							<td><?php echo $row['NAZWA'] ?></td>
+							<th scope="row"> <?php echo $row['IDKSIAZKA']; ?> </th>
+							<td><?php echo $row['TYTUL'] ?></td>
 						</tr>
 					<?php 
 					}

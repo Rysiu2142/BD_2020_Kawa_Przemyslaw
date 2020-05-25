@@ -21,8 +21,8 @@ CREATE SEQUENCE OcenyFilmu_SEQ MINVALUE 1 MAXVALUE 999999 START with 1 INCREMENT
 
 -----------------------------------------------------------------
 -- DDL for Procedure CREATE (INSERT)
------------------------------------------------------------------
-CREATE OR REPLACE PACKAGE T_OCENA AS
+-------------------------------------------------------------------done
+CREATE OR REPLACE PACKAGE T_OCENA AS 
 
 PROCEDURE ST_OCENA(
   Ocena_1 in OCENY.Ocena%TYPE,
@@ -58,76 +58,9 @@ END ST_OCENA;
 END T_OCENA;
 /
 
------------------------------------------------------------------
-CREATE OR REPLACE PACKAGE T_GATUNEK AS
 
-FUNCTION gatunek_p(
-nazwa_1 in GATUNKI.Nazwa%TYPE
-) RETURN NUMBER;
 
-PROCEDURE ST_Gatunek
-(
- Nazwa in GATUNKI.Nazwa%TYPE
- );
-
-PROCEDURE usun(
-idgatunek_1 in GATUNKI.idgatunek%TYPE );
-PROCEDURE getGatuneki(
-GATUNKI_o OUT SYS_REFCURSOR);
-
-END T_GATUNEK;
-/
-
-CREATE OR REPLACE PACKAGE BODY T_GATUNEK AS
-
-FUNCTION gatunek_p(
-nazwa_1 in GATUNKI.Nazwa%TYPE
-) RETURN NUMBER IS
-  suma NUMBER:=0;
-  BEGIN
-    SELECT COUNT(*) INTO suma FROM GATUNKI WHERE Nazwa=nazwa_1;
-    RETURN suma;
-  END gatunek_p;
-  
-  PROCEDURE ST_Gatunek(
-  Nazwa in GATUNKI.Nazwa%TYPE
-  ) AS
-  BEGIN
-	INSERT INTO Gatunki
-	VALUES (
-	Gatunki_SEQ.nextval,
-	Nazwa);
-END ST_Gatunek;
-
-	PROCEDURE usun(
-	idgatunek_1 in GATUNKI.idgatunek%TYPE 
-	) AS
-	gat GATUNKI%ROWTYPE;
-	BEGIN
-		select * into gat from GATUNKI where idgatunek=idgatunek_1;
-		delete from GATUNKI where idgatunek=idgatunek_1;
-		DBMS_OUTPUT.PUT_LINE(gat.idgatunek);
-	END usun;
-	
-	PROCEDURE getGatuneki(
-GATUNKI_o OUT SYS_REFCURSOR)
-OPEN GATUNKI_o FOR
-SELECT * from GATUNKI;
-END T_GATUNEK;
-	/
-	
-	CREATE OR REPLACE TRIGGER gatunek_male
-	BEFORE INSERT ON GATUNKI
-	FOR EACH ROW
-	BEGIN
-		:new.Nazwa := lower( :new.Nazwa );
-	END;
-	/
-	ALTER TRIGGER gatunek_male ENABLE;
-	
------------------------------------------------------------------  
-
------------------------------------------------------------------
+-------------------------------------------------------------------done
 CREATE OR REPLACE PACKAGE T_Ksiazke AS  
 PROCEDURE ST_Ksiazki
 (tytul_in in Ksiazki.Tytul%TYPE,
@@ -190,51 +123,63 @@ BEGIN
 END ST_KA;
 END T_Ksiazke;
 /
+------------------------------------------------------------------- done
+CREATE OR REPLACE TRIGGER tytul_male  
+	BEFORE INSERT ON Ksiazki
+	FOR EACH ROW
+	BEGIN
+		:new.Tytul := lower( :new.Tytul );
+	END;
+	/
+	ALTER TRIGGER tytul_male ENABLE;
+	
 -----------------------------------------------------------------
 CREATE OR REPLACE PACKAGE T_Autor AS
-FUNCTION autor_p(
-imie_1 in Autorzy.Imie%TYPE
+
+FUNCTION autor_pow(
+imie_1 in Autorzy.Imie%TYPE,
+nazwisko_1 Autorzy.Nazwisko%TYPE
 ) RETURN NUMBER;
 
 PROCEDURE ST_Autorzy
 (
  imie IN Autorzy.Imie%TYPE,
- nazwisko IN Autorzy.Nazwisko%TYPE,  -- do naprawy
- urodzony IN Autorzy.Nazwisko%TYPE,
- zmarly IN Autorzy.Nazwisko%TYPE
-);
-
-PROCEDURE W_Autorzy
-(
- imie IN Autorzy.Imie%TYPE,
- nazwisko IN Autorzy.Nazwisko%TYPE,
-
+ nazwisko IN Autorzy.Nazwisko%TYPE,  
+ urodzony IN VARCHAR2,
+ zmarly IN VARCHAR2
 );
 END T_Autor;
 /
+
 CREATE OR REPLACE PACKAGE BODY T_Autor AS
 
-FUNCTION autor_p(
-imie_1 in Autorzy.Imie%TYPE
+FUNCTION autor_pow(
+imie_1 in Autorzy.Imie%TYPE,
+nazwisko_1 Autorzy.Nazwisko%TYPE
 ) RETURN NUMBER IS
 	suma NUMBER :=0;
 BEGIN
-	SELECT COUNT(*) INTO suma FROM Autorzy WHERE Imie=imie_1;
+	SELECT COUNT(*) INTO suma FROM Autorzy WHERE Imie=imie_1 AND Nazwisko=nazwisko_1;
 	RETURN suma;
-END autor_p;
+END autor_pow;
 
 PROCEDURE ST_Autorzy
 (
- imie IN Autorzy.Imie%TYPE, -- do naprawy
- nazwisko IN Autorzy.Nazwisko%TYPE,
+imie IN Autorzy.Imie%TYPE,
+ nazwisko IN Autorzy.Nazwisko%TYPE,  
+ urodzony IN VARCHAR2,
+ zmarly IN VARCHAR2
 
 ) AS
 BEGIN
-	INSERT INTO Autorzy (
+	INSERT INTO Autorzy 
 	VALUES (
 	Autorzy_SEQ.nextval,
 	imie,
-	nazwsko);
+	nazwisko,
+	TO_DATE(urodzony, 'RRRR-MM-DD'),
+	TO_DATE(zmarly, 'RRRR-MM-DD')
+	);
 END ST_Autorzy;
 END T_Autor;
 /
@@ -262,7 +207,7 @@ BEGIN
 	VALUES (
 	Filmy_SEQ.nextval,
 	tytul,
-	ksiazka);
+	idksiazka);
 END ST_Filmy;
 END T_KA;
 /
@@ -272,7 +217,7 @@ CREATE OR REPLACE PACKAGE T_OF AS
 
 PROCEDURE ST_OcenyFilmu
 (
- ocena IN OcenyFilmu.Ocena%TYPE
+ ocena_1 IN OcenyFilmu.Ocena%TYPE,
  idfilmu IN OcenyFilmu.idfilm%TYPE
 );
 END T_OF;
@@ -281,7 +226,7 @@ CREATE OR REPLACE PACKAGE BODY T_OF AS
 
 PROCEDURE ST_OcenyFilmu
 (
- ocena_1 IN OcenyFilmu.Ocena%TYPE -- do poprawy
+ ocena_1 IN OcenyFilmu.Ocena%TYPE, 
  idfilmu IN OcenyFilmu.idfilm%TYPE
 ) AS
 	Ocena_2 OCENY.Ocena%TYPE;
@@ -300,53 +245,11 @@ BEGIN
 	idfilmu
 	);
 END ST_OcenyFilmu;
-END T_OF
+END T_OF;
 /
 -----------------------------------------------------------------
 
 
-CREATE OR REPLACE PACKAGE T_Kategoria AS
-FUNCTION Kategoria_p(
-nazwa_1 in Kategoria.Nazwa%TYPE
-) RETURN NUMBER;
-
-PROCEDURE ST_Kategoria
-(
- Nazwa IN Kategoria.Nazwa%TYPE
-);
-END T_Kategoria;
-/
-CREATE OR REPLACE PACKAGE BODY T_Kategoria AS
-FUNCTION Kategoria_p(
-nazwa_1 in Kategoria.Nazwa%TYPE
-) RETURN NUMBER IS
-	suma NUMBER :=0;
-BEGIN
-	SELECT COUNT(*) INTO suma FROM Autorzy WHERE Nazwa=nazwa_1;
-	RETURN suma;
-END Kategoria_p;
-
-PROCEDURE ST_Kategoria
-(
- Nazwa IN Kategoria.Nazwa%TYPE
-) AS
-BEGIN 
-	INSERT INTO Kategoria
-	VALUES (
-	Kategoria_SEQ.nextval,
-	Nazwa_in);
-END ST_Kategoria;
-END T_Kategoria;
-/
-CREATE OR REPLACE TRIGGER Kategoria_male
-	BEFORE INSERT ON Kategoria
-	FOR EACH ROW
-	BEGIN
-		:new.Nazwa := lower( :new.Nazwa );
-	END;
-	/
-	ALTER TRIGGER Kategoria_male ENABLE;
------------------------------------------------------------------
 CREATE OR REPLACE PACKAGE T_KF
 PROCEDURE ST_FK
 (
@@ -370,22 +273,8 @@ BEGIN
 END ST_FK;
 END T_KF;
 /
------------------------------------------------------------------
---  SELECTS
------------------------------------------------------------------
-CREATE OR REPLACE PACKAGE S_OCENY AS
-PROCEDURE SE_OCENY(OCENY OUT SYS_REFCURSOR);
 
-END S_OCENY;
-/
-CREATE OR REPLACE PACKAGE BODY S_OCENY AS
-PROCEDURE SE_OCENY(OCENY OUT SYS_REFCURSOR) AS
-BEGIN
-OPEN OCENY FOR
-SELECT idocena, Ocena FROM OCENY;
-END SE_OCENY;
-END S_OCENY;
-/
+
 -----------------------------------------------------------------
 CREATE OR REPLACE PACKAGE F_Kategoria AS
 PROCEDURE Fet_Kategoria(
@@ -520,4 +409,38 @@ END WKategorie;
 END S_WINGS;
 /
 -----------------------------------------------------------------
+-- F_FILMY 
+-----------------------------------------------------------------
+CREATE OR REPLACE PACKAGE F_Filmy AS
 
+PROCEDURE Fet_Film(Filmy_out OUT SYS_REFCURSOR);
+PROCEDURE AVG_Film(idfilm_1 in Filmy.idfilm%TYPE,
+					ocena_out OUT SYS_REFCURSOR);
+PROCEDURE usun_Film(idfilm_1 in Filmy.idfilm%TYPE);
+END F_Filmy;
+/
+CREATE OR REPLACE PACKAGE BODY F_Filmy AS
+PROCEDURE Fet_Film(Filmy_out OUT SYS_REFCURSOR) AS
+BEGIN
+	OPEN Filmy_out FOR
+	SELECT idfilm,f.Tytul,k.Tytul AS BOOK
+	FROM Filmy f LEFT JOIN ksiazki k ON f.idksiazka=k.idksiazka;
+END Fet_Film ;
+
+PROCEDURE AVG_Film(idfilm_1 in Filmy.idfilm%TYPE,
+					ocena_out OUT SYS_REFCURSOR) AS
+BEGIN
+	OPEN Ocena_out FOR
+	SELECT AVG(Ocena) AS SREDF
+	FROM OcenyFilmu o
+	WHERE idfilm_1=o.idfilm;
+END AVG_Film;
+
+PROCEDURE usun_Film(idfilm_1 in Filmy.idfilm%TYPE) AS
+BEGIN 
+	delete from OCENYFilmu where idfilm_1=idfilm;
+	delete from FilmyKategoria where idfilm_1=idfilm;
+	delete from Filmy where idfilm_1=idfilm;
+END usun_Film;
+END F_Filmy;
+/

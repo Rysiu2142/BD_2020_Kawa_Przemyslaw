@@ -58,7 +58,7 @@ session_start();
 				}
 				
 				$cursor1=oci_new_cursor($conn);
-				$stid = oci_parse($conn,"begin F_Ksiazki.Fet_Ksiazki(:dane); end;");
+				$stid = oci_parse($conn,"begin F_Filmy.Fet_Film(:dane); end;");
 				oci_bind_by_name($stid,":dane",$cursor1,-1,OCI_B_CURSOR);
 				oci_execute($stid);
 				oci_execute($cursor1);
@@ -71,10 +71,7 @@ session_start();
 						<tr>
 							<th scope="col">ID</th>
 							<th scope="col">Tytul</th>
-							<th scope="col">Rok wydania</th>
-							<th scope="col">Orginalny Jezyk</th>
-							<th scope="col">Opcje</th>
-							<th scope="col">Oceń</th>
+							<th scope="col">Na Podstawie</th>
 						</tr>
 					</thead>
 					
@@ -83,18 +80,18 @@ session_start();
 							while (($row = oci_fetch_array($cursor1, OCI_ASSOC + OCI_RETURN_NULLS)) !=false) {
 						?>
 						<tr>
-							<th scope="row"> <?php echo $row['IDKSIAZKA']; ?> </th>
+							<th scope="row"> <?php echo $row['IDFILM']; ?> </th>
 							<td><?php echo $row['TYTUL'] ?></td>
-							<td><?php echo $row['ROK_WYDANIA'] ?></td>
-							<td><?php echo $row['ORGINALNYJEZYK'] ?></td>
+							<td><?php if(isset($row['BOOK'])) { echo $row['BOOK'];} 
+										else{ echo "nie określono"; }?></td>
 							<td>
 								<div class="row text-center">
-									<form method="post" action="usunk.php">
-										<input name="IDKSIAZKA" type="hidden" value="<?php echo $row['IDKSIAZKA']; ?>">
+									<form method="post" action="usunf.php">
+										<input name="IDFILM" type="hidden" value="<?php echo $row['IDFILM']; ?>">
 										<button name="usun" class="btn btn-warning btm-sm">Usuń</button>
 									</form>
-									<form method="post" action="index.php">
-										<input name="IDKSIAZKA1" type="hidden" value="<?php echo $row['IDKSIAZKA']; ?>">
+									<form method="post" action="Filmy.php">
+										<input name="IDFILM1" type="hidden" value="<?php echo $row['IDFILM']; ?>">
 										<button name="index" class="btn btn-secondary btm-sm">Szczegóły</button>
 									</form>
 									
@@ -102,9 +99,9 @@ session_start();
 							</td>
 							<td>
 								<div class="row text-center">
-								 <form method="post" action="ocen.php">
+								 <form method="post" action="ocenf.php">
 										<input name="OCENA" type="number" placeholder="5"> 
-										<input name="IDKSIAZKA" type="hidden" value="<?php echo $row['IDKSIAZKA']; ?>">
+										<input name="IDFILM" type="hidden" value="<?php echo $row['IDFILM']; ?>">
 										<button name="ocen" class="btn btn-secondary btm-sm">Oceń</button>
 									</form>
 								</div>
@@ -124,7 +121,7 @@ session_start();
 	<div class="col-sm-4 text-center">
 		<h3> Szczegóły </h3>
     <?php
-		if(isset($_POST['IDKSIAZKA1'])) 
+		if(isset($_POST['IDFILM1'])) 
 		{
 			$conn = oci_connect('HR','haslo','localhost:1521/KSIAZKIFILMY');
 					if(!$conn) 
@@ -134,9 +131,9 @@ session_start();
 				}
 				$cursor5=oci_new_cursor($conn);
 				
-				$stid = oci_parse($conn,"begin F_Ksiazki.AVG_OCENA(:id,:dane); end;");
+				$stid = oci_parse($conn,"begin F_Filmy.AVG_Film(:id,:dane); end;");
 					oci_bind_by_name($stid,":dane",$cursor5,-1,OCI_B_CURSOR);
-					oci_bind_by_name($stid,":id",$_POST['IDKSIAZKA1']);
+					oci_bind_by_name($stid,":id",$_POST['IDFILM1']);
 					oci_execute($stid);
 					oci_execute($cursor5);
 					
@@ -146,30 +143,29 @@ session_start();
 			<div class="tab-pane" role="tabpanel"> 
 				<h2> Średnia Ocena <h2>
 				<h4><?php $row = oci_fetch_array($cursor5,OCI_ASSOC+OCI_RETURN_NULLS);
-					if (!empty($row['SRED']))
+					if (!empty($row['SREDF']))
 					{ 
-						echo $row['SRED'];
+						echo $row['SREDF'];
 					}
 					else
-						echo "Ksiazka Nie ma Ocen";
+						echo "Film Nie ma Ocen";
 				?>
 				</h4>
 				<?php
 				 
 					oci_free_statement($cursor5);
 					$cursor2=oci_new_cursor($conn);
-					$stid = oci_parse($conn,"begin F_Autorzy.Fet_Autorzy(:id,:dane); end;");
+					$stid = oci_parse($conn,"begin F_Kategoria.Fet_Kategoria(:id,:dane); end;");
 					oci_bind_by_name($stid,":dane",$cursor2,-1,OCI_B_CURSOR);
-					oci_bind_by_name($stid,":id",$_POST['IDKSIAZKA1']);
+					oci_bind_by_name($stid,":id",$_POST['IDFILM1']);
 					oci_execute($stid);
 					oci_execute($cursor2);
 				?>
 				<table class="table">
 					<thead>
 						<tr>
-							<th scope="col">ID Autora</th>
-							<th scope="col">Imie</th>
-							<th scope="col">Nazwisko</th>
+							<th scope="col">ID Kategori</th>
+							<th scope="col">Nazwa</th
 						</tr>
 					</thead>
 					
@@ -178,9 +174,8 @@ session_start();
 							while (($row = oci_fetch_array($cursor2, OCI_ASSOC + OCI_RETURN_NULLS)) !=false) {
 						?>
 						<tr>
-							<th scope="row"> <?php echo $row['IDAUTOR']; ?> </th>
-							<td><?php echo $row['IMIE'] ?></td>
-							<td><?php echo $row['NAZWISKO'] ?></td>
+							<th scope="row"> <?php echo $row['IDKATEGORIA']; ?> </th>
+							<td><?php echo $row['NAZWA'] ?></td>
 						</tr>
 					<?php 
 					}
@@ -192,37 +187,8 @@ session_start();
 					oci_free_statement($stid);
 					oci_free_statement($cursor2);
 					
-					$cursor3=oci_new_cursor($conn);
-					$stid = oci_parse($conn,"begin F_Gatunki.Fet_Gatunki(:id,:dane); end;");
-					oci_bind_by_name($stid,":dane",$cursor3,-1,OCI_B_CURSOR);
-					oci_bind_by_name($stid,":id",$_POST['IDKSIAZKA1']);
-					oci_execute($stid);
-					oci_execute($cursor3);
 					?>
-					<table class="table">
-					<thead>
-						<tr>
-							<th scope="col">ID Gatunku</th>
-							<th scope="col">Gatunek</th>
-						</tr>
-					</thead>
-					
-					<tbody>
-						<?php
-							while (($row = oci_fetch_array($cursor3, OCI_ASSOC + OCI_RETURN_NULLS)) !=false) {
-						?>
-						<tr>
-							<th scope="row"> <?php echo $row['IDGATUNEK']; ?> </th>
-							<td><?php echo $row['NAZWA'] ?></td>
-						</tr>
-					<?php 
-					}
-						oci_free_statement($stid);
-						oci_free_statement($cursor3);
-						oci_close($conn);
-					?>
-					</tbody>
-				</table>
+
 			</div>
 		<?php
 		unset($_POST['IDKSIAZKA1']);			
@@ -235,11 +201,7 @@ session_start();
 </div>
 <div class="row">
 		<div class="col-sm-4 text-center">
-			<?php
-			 if(isset($_SESSION['powtorzenie'])) echo $_SESSION['powtorzenie'];
-			unset($_SESSION['powtorzenie']);
 
-		?>
 		</div>
 </div>
 <footer class="container-fluid text-center">

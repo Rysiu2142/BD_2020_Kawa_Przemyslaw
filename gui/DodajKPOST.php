@@ -31,6 +31,10 @@
 		$g=1;
 	}
 	
+	
+	
+	
+
 	$cursor1=oci_new_cursor($conn);
 	$stid = oci_parse($conn,"begin T_Ksiazke.ST_Ksiazki(:tytul, :rok,:jez,:dane); end;");
 	oci_bind_by_name($stid,":tytul",$_POST['Tytul']);
