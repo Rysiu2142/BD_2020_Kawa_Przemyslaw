@@ -46,7 +46,7 @@ session_start();
 <div class="container-fluid text-center">    
   <div class="row content">
     <div class="col-sm-8"> 
-		<h2> Ksiazki </h2>
+		<h2> Filmy </h2>
        <div class="tab-pane" role="tabpanel"> 
 	   
 			<?php

@@ -61,7 +61,7 @@ session_start();
 				</div>
 				<div class="form-item">
 					<label>ID Ksiazki</label>
-					<input name="IDKSIAZKI" class="form-control" placeholder="Jeden NUMER!">
+					<input name="IDKSIAZKI" class="form-control" placeholder="Wybierz tylko jeden numer!">
 				</div>
 				<div class="form-item">
 					<input name="dead" type="hidden">
@@ -91,7 +91,7 @@ session_start();
 				<table class="table">
 					<thead>
 						<tr>
-							<th scope="col">ID Kaegori</th>
+							<th scope="col">ID Kategoria</th>
 							<th scope="col">Nazwa</th>
 						</tr>
 					</thead>

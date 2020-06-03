@@ -133,7 +133,7 @@ CREATE OR REPLACE TRIGGER tytul_male
 	/
 	ALTER TRIGGER tytul_male ENABLE;
 	
------------------------------------------------------------------
+----------------------------------------------------------------- done
 CREATE OR REPLACE PACKAGE T_Autor AS
 
 FUNCTION autor_pow(
@@ -185,31 +185,65 @@ END T_Autor;
 /
 
 -----------------------------------------------------------------
--- Fimy i pochodne
+-- Stworz Fimy 
 -----------------------------------------------------------------
-CREATE OR REPLACE PACKAGE T_KA AS
+CREATE OR REPLACE PACKAGE T_Film AS
 PROCEDURE ST_Filmy
 (
- tytul IN Filmy.Tytul%TYPE,
- idksiazka IN Filmy.idksiazka%TYPE
+ tytul_in IN Filmy.Tytul%TYPE,
+ idksiazka IN Filmy.idksiazka%TYPE,
+ nrfil out SYS_REFCURSOR
 );
-END T_KA;
-/
 
-CREATE OR REPLACE PACKAGE BODY T_KA AS
+PROCEDURE ST_FK
+(
+ idfilm IN FilmyKategoria.idfilm%TYPE,
+ idkategoria IN FilmyKategoria.idkategoria%TYPE
+);
+Function Check_Book (idksiazka_1 IN Filmy.idksiazka%TYPE) RETURN NUMBER;
+END T_Film;
+
+ /
+
+CREATE OR REPLACE PACKAGE BODY T_Film AS
 PROCEDURE ST_Filmy
 (
- tytul IN Filmy.Tytul%TYPE,
- idksiazka IN Filmy.idksiazka%TYPE
+ tytul_in IN Filmy.Tytul%TYPE,
+ idksiazka IN Filmy.idksiazka%TYPE,
+ nrfil out SYS_REFCURSOR
 ) AS
 BEGIN
 	INSERT INTO Filmy 
 	VALUES (
 	Filmy_SEQ.nextval,
-	tytul,
+	tytul_in,
 	idksiazka);
+	OPEN nrfil FOR
+	SELECT idfilm FROM Filmy WHERE tytul_in=tytul;
 END ST_Filmy;
-END T_KA;
+
+PROCEDURE ST_FK
+(
+ idfilm IN FilmyKategoria.idfilm%TYPE,
+ idkategoria IN FilmyKategoria.idkategoria%TYPE
+) AS
+BEGIN
+	INSERT INTO FilmyKategoria
+	VALUES (
+	FilmyKategoria_SEQ.nextval,
+	idfilm,
+	idkategoria);
+END ST_FK;
+Function Check_Book (
+idksiazka_1 IN Filmy.idksiazka%TYPE
+) RETURN NUMBER IS
+	suma NUMBER:=0;
+	BEGIN
+		SELECT COUNT(*) INTO suma FROM ksiazki WHERE idksiazka_1=idksiazka;
+		RETURN suma;
+	END Check_Book;
+
+END T_Film;
 /
 
 -----------------------------------------------------------------
@@ -246,32 +280,6 @@ BEGIN
 	);
 END ST_OcenyFilmu;
 END T_OF;
-/
------------------------------------------------------------------
-
-
-CREATE OR REPLACE PACKAGE T_KF
-PROCEDURE ST_FK
-(
- idfilm IN FilmyKategoria.idfilm%TYPE,
- idkategoria IN FilmyKategoria.idkategoria%TYPE
-);
-END T_KF;
- /
-CREATE OR REPLACE PACKAGE BODY T_KF
-PROCEDURE ST_FK
-(
- idfilm IN FilmyKategoria.idfilm%TYPE,
- idkategoria IN FilmyKategoria.idkategoria%TYPE
-) AS
-BEGIN
-	INSERT INTO FilmyKategoria
-	VALUES (
-	FilmyKategoria_SEQ.nextval,
-	idfilm,
-	idkategoria);
-END ST_FK;
-END T_KF;
 /
 
 
