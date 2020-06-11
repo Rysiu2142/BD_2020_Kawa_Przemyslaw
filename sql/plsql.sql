@@ -62,6 +62,7 @@ END T_OCENA;
 
 -------------------------------------------------------------------done
 CREATE OR REPLACE PACKAGE T_Ksiazke AS  
+
 PROCEDURE ST_Ksiazki
 (tytul_in in Ksiazki.Tytul%TYPE,
  data_wydania in Ksiazki.rok_wydania%TYPE,
@@ -76,6 +77,7 @@ PROCEDURE ST_KA
 END T_Ksiazke;
 /
 CREATE OR REPLACE PACKAGE BODY T_Ksiazke AS  
+
 PROCEDURE ST_Ksiazki
 (
  tytul_in in Ksiazki.Tytul%TYPE,
@@ -83,6 +85,7 @@ PROCEDURE ST_Ksiazki
  OrginalnyJezyk in Ksiazki.OrginalnyJezyk%TYPE,
  nrks out SYS_REFCURSOR
 ) AS
+tytul_low varchar2(255) :=lower(tytul_in);
 BEGIN
 	INSERT INTO Ksiazki 
 	VALUES (
@@ -92,7 +95,7 @@ BEGIN
 	OrginalnyJezyk
 	);
 	OPEN nrks FOR
-	SELECT idksiazka FROM Ksiazki WHERE tytul_in=tytul;
+	SELECT idksiazka FROM Ksiazki WHERE tytul_low=tytul;
 END ST_Ksiazki;
 
 PROCEDURE ST_KG
@@ -191,7 +194,7 @@ CREATE OR REPLACE PACKAGE T_Film AS
 PROCEDURE ST_Filmy
 (
  tytul_in IN Filmy.Tytul%TYPE,
- idksiazka IN Filmy.idksiazka%TYPE,
+ idksiazka_in IN Filmy.idksiazka%TYPE,
  nrfil out SYS_REFCURSOR
 );
 
@@ -209,15 +212,15 @@ CREATE OR REPLACE PACKAGE BODY T_Film AS
 PROCEDURE ST_Filmy
 (
  tytul_in IN Filmy.Tytul%TYPE,
- idksiazka IN Filmy.idksiazka%TYPE,
+ idksiazka_in IN Filmy.idksiazka%TYPE,
  nrfil out SYS_REFCURSOR
 ) AS
-BEGIN
+BEGIN	
 	INSERT INTO Filmy 
 	VALUES (
 	Filmy_SEQ.nextval,
 	tytul_in,
-	idksiazka);
+	idksiazka_in);
 	OPEN nrfil FOR
 	SELECT idfilm FROM Filmy WHERE tytul_in=tytul;
 END ST_Filmy;
@@ -234,6 +237,7 @@ BEGIN
 	idfilm,
 	idkategoria);
 END ST_FK;
+
 Function Check_Book (
 idksiazka_1 IN Filmy.idksiazka%TYPE
 ) RETURN NUMBER IS

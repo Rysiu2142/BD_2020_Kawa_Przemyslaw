@@ -19,7 +19,7 @@
 				oci_bind_by_name($stid,":ocena",$ocena);
 				oci_execute($stid);
 				
-				header('Location: index.php');
+				header('Location: Filmy.php');
 				oci_free_statement($stid);
 				oci_close($conn);
 ?>

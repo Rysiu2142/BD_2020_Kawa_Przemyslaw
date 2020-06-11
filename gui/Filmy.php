@@ -72,6 +72,8 @@ session_start();
 							<th scope="col">ID</th>
 							<th scope="col">Tytul</th>
 							<th scope="col">Na Podstawie</th>
+							<th scope="col">Opcje</th>
+							<th scope="col">Oceń</th>
 						</tr>
 					</thead>
 					

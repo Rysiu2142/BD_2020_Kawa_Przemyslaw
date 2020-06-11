@@ -145,7 +145,9 @@ session_start();
 					</tbody>
 				</table>
 			</div>
-		
+			<?php
+		if(isset($_SESSION['istneje'])) echo $_SESSION['istneje'];
+			unset($_SESSION['istneje']); ?>
   </div>
 </div>
 <div class="row">

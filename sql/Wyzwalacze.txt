@@ -1,0 +1,9 @@
+CREATE OR REPLACE TRIGGER tytul_male  
+	BEFORE INSERT ON Ksiazki
+	FOR EACH ROW
+	BEGIN
+		:new.Tytul := lower( :new.Tytul );
+	END;
+	/
+	ALTER TRIGGER tytul_male ENABLE;
+

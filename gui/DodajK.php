@@ -75,7 +75,14 @@ session_start();
 					<button class="btn btn-secondary btn-sm">Dodaj</button>
 				</div>
 			</form>
-			
+			<?php
+			if(isset($_SESSION['Grrr']))
+			  {
+				  echo $_SESSION['Grrr'];
+				  unset ($_SESSION['Grrr']);
+
+			  }
+			  ?>
 		</div>
 	</div>
 	<div class="col-sm-4 text-center">
@@ -120,6 +127,7 @@ session_start();
 					</tbody>
 				</table>
 					<?php
+					
 					oci_free_statement($stid);
 					oci_free_statement($cursor2);
 					

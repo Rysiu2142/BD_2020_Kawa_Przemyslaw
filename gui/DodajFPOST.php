@@ -21,25 +21,26 @@
 	
 	$idksiazka=0;
 	$r=-1;
-	if(isset($_POST['IDKSIAZKI'])
+	if(isset($_POST['IDKSIAZKI']))
 	{
-		$idksiazka=$_POST['IDKSIAZKI'];
-		$stid = oci_parse($conn,"begin :r = T_Film.Check_Book(:idks); end;");
+		$idksiazka=(int)$_POST['IDKSIAZKI'];
+		$stid = oci_parse($conn,"begin :r := T_Film.Check_Book(:idks); end;");
 		oci_bind_by_name($stid,":r",$r);
 		oci_bind_by_name($stid,":idks",$idksiazka);
 		oci_execute($stid);
 	}
 	else
 	{
-		$idksiazka=NULL
+		$idksiazka=NULL;
+		
 	}
-	
+
 	if($r == -1 or $r ==1)
 	{
 		$cursor1=oci_new_cursor($conn);
 		$stid = oci_parse($conn,"begin T_Film.ST_Filmy(:tytul,:idks,:dane); end;");
 		oci_bind_by_name($stid,":tytul",$_POST['Tytul']);
-		oci_bind_by_name($stid,":idks",$_POST['IDKSIAZKI']);
+		oci_bind_by_name($stid,":idks",$idksiazka);
 		oci_bind_by_name($stid,":dane",$cursor1,-1,OCI_B_CURSOR);
         oci_execute($stid);
 		oci_execute($cursor1);
@@ -47,9 +48,9 @@
 		$idk=$row['IDFILM'];
 		oci_free_statement($stid);
 		oci_free_statement($cursor1);
-		if($k!=1)
+		if($k==0)
 		{
-			$stid = oci_parse($conn,"begin T_Film.ST_FK(:kategoria,:idf)")
+			$stid = oci_parse($conn,"begin T_Film.ST_FK(:idf,:kategoria); end;");
 			oci_bind_by_name($stid,":idf",$idk);
 			$autorzy= explode(",",$_POST['IDKATEG']);
 			foreach($autorzy as $value)
@@ -58,11 +59,16 @@
 				oci_execute($stid);
 			}
 			oci_free_statement($stid);
+			
 		}
-		
+		header('Location: Filmy.php');
 	}
 	else
 	{
-		
+		$_SESSION['istneje'] ='<span style="color:red">Nie istnieje taka ksiażka</span>';
+		header('Location: DodajF.php');
 	}
+
+	oci_close($conn);
+	
 ?>

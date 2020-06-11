@@ -1,4 +1,0 @@
-C:\app\Oracle\product\12.1.0\dbhome_1\jdk\jre\bin\java.exe
-
-czemu? 
-nie wiem
