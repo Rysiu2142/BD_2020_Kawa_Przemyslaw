@@ -14,4 +14,4 @@ DBA
 
 
 student
-student GRanted : connect
+student GRanted : connect, DBA

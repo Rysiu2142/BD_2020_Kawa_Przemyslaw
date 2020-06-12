@@ -1,6 +1,6 @@
 
 
---DLL for Oceny
+
 CREATE TABLE Oceny (
   idocena NUMBER(10) PRIMARY KEY,
   Ocena NUMBER(10),
@@ -8,7 +8,7 @@ CREATE TABLE Oceny (
 );
 
 
---DLL for Ksiazki
+
 CREATE TABLE Ksiazki (
   idksiazka NUMBER(10) PRIMARY KEY,
   Tytul varchar2(255),
@@ -17,7 +17,7 @@ CREATE TABLE Ksiazki (
 );
 
 
---DLL for Autorzy
+
 CREATE TABLE Autorzy (
   idautor NUMBER(10) PRIMARY KEY,
   Imie varchar2(255),
@@ -26,27 +26,27 @@ CREATE TABLE Autorzy (
   zmarly date
 );
 
---DLL for KsiazkiAutorzy
+
 CREATE TABLE KsiazkiAutorzy (
   idKA NUMBER(10) PRIMARY KEY,
   idautor NUMBER(10),
   idksiazka NUMBER(10)
 );
 
---DLL for Gatunki
+
 CREATE TABLE Gatunki (
   idgatunek NUMBER(10) PRIMARY KEY,
   Nazwa varchar2(255)
 );
 
---DLL for KsiazkiGatunki
+
 CREATE TABLE KsiazkiGatunki (
   idKG NUMBER(10) PRIMARY KEY,
   idgatunek NUMBER(10),
   idksiazka NUMBER(10)
 );
 
---DLL for Filmy
+
 CREATE TABLE Filmy (
   idfilm NUMBER(10) PRIMARY KEY,
   Tytul varchar2(255),
@@ -66,7 +66,7 @@ CREATE TABLE Kategoria (
   Nazwa varchar2(255)
 );
 
---DLL for FilmyKategoria
+
 CREATE TABLE FilmyKategoria (
   idFK NUMBER(10) PRIMARY KEY, 
   idfilm NUMBER(10),
@@ -93,14 +93,6 @@ ALTER TABLE FilmyKategoria ADD FOREIGN KEY (idkategoria) REFERENCES Kategoria (i
 ALTER TABLE OcenyFilmu ADD FOREIGN KEY (idfilm) REFERENCES Filmy (idfilm);
 
 ALTER TABLE Filmy ADD FOREIGN KEY (idksiazka) REFERENCES Ksiazki (idksiazka);
-
-
-
-
-
-
-
-
 
 
 	
